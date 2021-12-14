@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from sqlalchemy import create_engine
 import pandas as pd
 import datetime as dt
+from dotenv import load_dotenv
 import sys
 import os
 
@@ -10,12 +11,14 @@ def cout(data):
     print(data)
 
 def saveDFToDB(df, db_path):
-    engine = create_engine("sqlite:///C:\\Users\\Phi\\Documents\\Code\\JavaScript\\Stormwatch\\backend\\database\\weatherdata.db")
+    engine = create_engine(os.environ.get("DATABASE_PATH"))
     with engine.connect() as con:
         df.to_sql("Weather", con, if_exists = "append", index = False)
         cout("saved data to database")
 
 if __name__ == "__main__":
+    load_dotenv()
+
     page = requests.get("https://www.hetweeractueel.nl/weer/terneuzen/actueel/")
     soup = BeautifulSoup(page.content, "html.parser")
 
