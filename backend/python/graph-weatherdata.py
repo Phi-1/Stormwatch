@@ -7,8 +7,10 @@ import seaborn as sns
 from fuzzywuzzy import process
 from datetime import datetime as dt, time
 from datetime import timedelta
+from dotenv import load_dotenv
 import json
 import sys
+import os
 
 
 def cout(data):
@@ -17,7 +19,7 @@ def cout(data):
 def getDataFromDatabase() -> pd.DataFrame:
     """Returns dataframe containing weatherdata from database"""
 
-    engine = create_engine("sqlite:///C:\\Users\\Phi\\Documents\\Code\\JavaScript\\Stormwatch\\backend\\database\\weatherdata.db")
+    engine = create_engine(os.environ.get("DATABASE_PATH"))
     df = pd.read_sql("SELECT * FROM Weather", engine)
     
     dtypes = {"Temperature": float, "Precipitation": float, "Wind_speed": float, "Wind_direction": "category", "Barometer": float, "Dewpoint": float, "Humidity": float, "Solar_radiation": float, "UV_index": float}
@@ -103,7 +105,7 @@ def main():
     else:
         vars = []
         # for timeseries the first two arguments shouldn't be processed as variables
-        if sys.argv[1] =="timeseries": 
+        if sys.argv[1] == "timeseries": 
             vars = processVariableArguments(weatherdata.columns, *sys.argv[4:])
         else:
             vars = processVariableArguments(weatherdata.columns, *sys.argv[2:])
@@ -121,4 +123,5 @@ def main():
            
 
 if __name__ == "__main__":
+    load_dotenv()
     main()
